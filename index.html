@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Viz — Creative Studio (v2)</title>
+<title>Viz — Creative Studio (v3)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -189,12 +189,12 @@
   /* Left side photo — padded inside the left half, sits below the nav */
   .ov-left{
     position:absolute !important;
-    left:40px !important;
-    top:80px !important;
+    left:0 !important;
+    bottom:0 !important;
+    top:auto !important;
     right:auto !important;
-    bottom:auto !important;
-    width:calc(50vw - 60px) !important;
-    height:calc(100vh - 120px) !important;
+    width:48vw !important;
+    height:calc(100vh - 70px) !important;
     object-fit:cover;
     opacity:0;
     transition:opacity 0.55s var(--ease) 0.55s;
@@ -411,6 +411,7 @@
   // ----- Render the row each frame -----
   function render(){
     for(let i = 0; i < cards.length; i++){
+      if(i === openIndex) continue;           // skip the card the user opened
       const base = (i - CENTER_INDEX) * step * spread - p;
       const x = centerX + wrap(base) - cardW / 2;
       cards[i].style.transform = "translate3d(" + x + "px,0,0)";
@@ -566,7 +567,7 @@
     // vertically centered, keeping its exact width/height (no scale).
     const w = card.offsetWidth;
     const h = card.querySelector("img").offsetHeight;
-    const targetX = window.innerWidth * 0.75 - w / 2;
+    const targetX = window.innerWidth * 0.72 - w / 2;
     const targetY = (window.innerHeight - h) / 2;
     // Override the .card's top so caption sits below the image, in same relative spot
     card.style.transition = "transform 0.8s var(--ease), top 0.8s var(--ease)";
