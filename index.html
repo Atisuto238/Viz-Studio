@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Viz — Creative Studio (v6)</title>
+<title>Viz — Creative Studio (v7)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -105,7 +105,7 @@
     pointer-events:none;
     visibility:hidden;
   }
-  #row.active{ visibility:visible; }
+  #row.active{ visibility:visible; pointer-events:auto; cursor:grab; }
 
   .card{
     position:absolute;
@@ -493,9 +493,9 @@
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    const imgH  = Math.round(Math.max(230, Math.min(380, H * 0.34)));
+    const imgH  = Math.round(Math.max(460, Math.min(720, H * 0.68)));
     cardW       = Math.round(imgH * 0.72);
-    const gap   = Math.round(cardW * 0.55);
+    const gap   = Math.round(cardW * 0.45);
     step        = cardW + gap;
     setWidth    = step * projects.length;
     centerX     = W / 2;
@@ -836,6 +836,59 @@
 
   // Wheel on info overlay: swallow it so the gallery doesn't respond
   infoOverlay.addEventListener("wheel", function(e){ e.stopPropagation(); }, {passive:true});
+
+
+  // ----- Mouse drag scroll on the gallery row -----
+  let dragActive = false;
+  let dragStartX = 0;
+  let dragLastX  = 0;
+  let dragVel    = 0;
+  let dragT      = 0;
+
+  rowEl.addEventListener("mousedown", function(e){
+    if(!marquee && !body.classList.contains("landed")) return;
+    if(body.classList.contains("proj-open") || body.classList.contains("info-open")) return;
+    dragActive = true;
+    dragStartX = e.clientX;
+    dragLastX  = e.clientX;
+    dragT      = performance.now();
+    dragVel    = 0;
+    rowEl.style.cursor = "grabbing";
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", function(e){
+    if(!dragActive) return;
+    const now = performance.now();
+    const dt  = (now - dragT) / 1000 || 0.016;
+    const dx  = e.clientX - dragLastX;
+    dragVel   = -dx / dt;
+    dragLastX = e.clientX;
+    dragT     = now;
+    p += -dx;  // move row immediately with finger
+  });
+
+  window.addEventListener("mouseup", function(){
+    if(!dragActive) return;
+    dragActive = false;
+    rowEl.style.cursor = "";
+    // Fling: hand off velocity to userVel
+    if(marquee) userVel = dragVel * 0.6;
+  });
+
+  // Touch support
+  let touchLastX = 0;
+  rowEl.addEventListener("touchstart", function(e){
+    if(body.classList.contains("proj-open") || body.classList.contains("info-open")) return;
+    touchLastX = e.touches[0].clientX;
+  }, {passive:true});
+
+  rowEl.addEventListener("touchmove", function(e){
+    if(body.classList.contains("proj-open") || body.classList.contains("info-open")) return;
+    const dx = e.touches[0].clientX - touchLastX;
+    touchLastX = e.touches[0].clientX;
+    p += -dx;
+  }, {passive:true});
 
 })();
 </script>
