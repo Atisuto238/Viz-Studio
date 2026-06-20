@@ -832,9 +832,7 @@
   });
 
   // Click anywhere on the overlay (outside the content box) to close
-  infoOverlay.addEventListener("click", function(e){
-    if(e.target === infoOverlay || e.target.id === "info-sheet") closeInfo();
-  });
+  infoOverlay.addEventListener("click", closeInfo);
 
   // Wheel on info overlay: swallow it so the gallery doesn't respond
   infoOverlay.addEventListener("wheel", function(e){ e.stopPropagation(); }, {passive:true});
